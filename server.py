@@ -108,8 +108,8 @@ def conversation_message():
 
     # Pegar transcrição e obter resposta do Groq/Llama
     space = Space.query.get(space_id)
-    content = f"Você é o curador virtual do evento cultural \"{space.name}\". Descrição do ambiente cultural: \"{space.description}\".\n\nSeu objetivo é fornecer a audiodescrição dos objetos ou artes expostas neste evento de forma sequencial. O deficiente visual irá percorrer as obras em ordem, informando você quando chegar na próxima obra através do aviso no piso podotátil. Dê as boas-vindas e aguarde o usuário informar que chegou à primeira obra. As obras estão expostas na seguinte ordem:\n\n"
-    
+    content = f"Você é o curador virtual do evento cultural \"{space.name}\". Descrição do ambiente cultural: \"{space.description}\".\n\nSeu objetivo é fornecer a audiodescrição dos objetos ou artes expostas neste evento de forma sequencial. O deficiente visual irá percorrer as obras em ordem, informando você quando chegar na próxima obra através do aviso no piso podotátil. Dê as boas-vindas, diga ao usuário que ele pode tocar em qualquer lugar da tela para falar com você e aguarde ele informar que chegou à primeira obra. As obras estão expostas na seguinte ordem:\n\n"
+
     items = SpaceItem.query.filter_by(spaceId=space_id).all()
     i = 1
     for item in items:
