@@ -8,7 +8,7 @@ load_dotenv()
 API_KEY = os.getenv('API_KEY')
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins='*')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('MYSQL_CONNECTION')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
