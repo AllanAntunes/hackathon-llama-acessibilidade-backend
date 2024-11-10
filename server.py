@@ -95,7 +95,7 @@ def conversation_message():
     transcripted_audio = transcription.text
 
     # Pegar transcrição e obter resposta do Groq/Llama
-    agent_response = run_conversation(transcripted_audio)
+    agent_response = run_conversation(transcripted_audio, groq_client)
     
     # Pegar resposta e passar no Piper para virar áudio .mp3
     

@@ -1,21 +1,16 @@
 from flask import request
-from groq import Groq
 import requests
 import json
 import os
 
 MODEL="llama-3.2-90b-vision-preview"
 
-groq_client = Groq(
-    api_key=os.environ.get("GROQ_API_KEY")
-)
-
 def pegar_info(team_name):
     headers = {'Authorization': request.headers.get('Authorization')}
     response = requests.get("https://api.acessibilidade.tec.br/space", headers=headers)
     return response.text
 
-def run_conversation(user_prompt):
+def run_conversation(user_prompt, groq_client):
     messages=[
         {
             "role": "system",
