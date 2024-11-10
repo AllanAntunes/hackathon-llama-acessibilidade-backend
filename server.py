@@ -313,4 +313,4 @@ def delete_item(space_id):
     return jsonify({"success": False, "itemId": data['itemId']}), 404
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
