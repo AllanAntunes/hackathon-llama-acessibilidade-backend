@@ -25,6 +25,14 @@ def require_api_key(func):
     wrapper.__name__ = func.__name__
     return wrapper
 
+class Message(db.Model):
+    __tablename__ = 'message'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    sessionId = db.Column(db.Integer, nullable=False)
+    role = db.Column(db.Integer, nullable=False, comment='1 - User / 2 - Assistant')
+    message = db.Column(db.Text, nullable=False)
+    datetime = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+
 class Space(db.Model):
     __tablename__ = 'space'
     id = db.Column(db.Integer, primary_key=True)
@@ -43,6 +51,27 @@ class SpaceItem(db.Model):
     imageUrl = db.Column(db.Text)
     authorName = db.Column(db.Text)
     authorDescription = db.Column(db.Text)
+
+@app.route('/conversation/start', methods=['GET'])
+@require_api_key
+def start_conversation():
+    response = {
+        "sessionId": "exampleSessionId",
+        "audioUrl": "exampleAudioUrl",
+        "transcription": "exampleTranscription"
+    }
+    return jsonify(response)
+
+@app.route('/conversation/message', methods=['POST'])
+@require_api_key
+def message_conversation():
+    data = request.json
+    response = {
+        "sessionId": data['sessionId'],
+        "audioUrl": "exampleAudioUrl",
+        "transcription": "exampleTranscription"
+    }
+    return jsonify(response)
 
 @app.route('/space', methods=['GET'])
 @require_api_key
