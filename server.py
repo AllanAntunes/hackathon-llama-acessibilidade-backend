@@ -111,6 +111,7 @@ def get_items(space_id):
         'step': item.step,
         'name': item.name,
         'description': item.description,
+        'aiDescription': item.aiDescription,
         'authorName': item.authorName,
         'authorDescription': item.authorDescription,
         'imageUrl': item.imageUrl
@@ -125,6 +126,7 @@ def get_item(space_id, item_id):
         'step': item.step,
         'name': item.name,
         'description': item.description,
+        'aiDescription': item.aiDescription,
         'authorName': item.authorName,
         'authorDescription': item.authorDescription,
         'imageUrl': item.imageUrl
