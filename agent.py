@@ -7,13 +7,14 @@ class agent:
     def __init__(self,space_id):
         self.__MODEL="llama-3.2-90b-vision-preview"
         self.__space_id = space_id
+        self.__space_item_id : str
 
-    def __pegar_info_expo():
+    def __pegar_info_expo(self):
         headers = {'Authorization': request.headers.get('Authorization')}
         response = requests.get(f"https://api.acessibilidade.tec.br/space/{self.__space_id}", headers=headers)
         return response.text
 
-    def __pegar_info_item():
+    def __pegar_info_item(self):
         headers = {'Authorization': request.headers.get('Authorization')}
         response = requests.get(f"https://api.acessibilidade.tec.br/space/{self.__space_id}/item/", headers=headers)
         return response.text
@@ -40,16 +41,13 @@ class agent:
                 "function": {
                     "name": "__pegar_info_expo",
                     "description": "Retorna a descrição das exposição",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "space_id": {
-                                "type": "string",
-                                "description": "Id do espaço",
-                            }
-                        },
-                        "required": ["space_id"],
-                    },
+                },
+            },
+                        {
+                "type": "function",
+                "function": {
+                    "name": "__pegar_info_item",
+                    "description": "Retorna a descrição dos itens da exposição",
                 },
             }
         ]
@@ -70,6 +68,7 @@ class agent:
         if tool_calls:
             available_functions = {
                 "__pegar_info_expo": self.__pegar_info_expo,
+                "__pegar_info_item": self.__pegar_info_item
             }
 
             messages.append(response_message)
@@ -77,16 +76,11 @@ class agent:
             for tool_call in tool_calls:
                 function_name = tool_call.function.name
                 function_to_call = available_functions[function_name]
-                function_args = json.loads(tool_call.function.arguments)
-                function_response = function_to_call(
-                    space_id=function_args.get("space_id")
-                )
                 messages.append(
                     {
                         "tool_call_id": tool_call.id,
                         "role": "tool",
                         "name": function_name,
-                        "content": function_response,
                     }
                 )
 
