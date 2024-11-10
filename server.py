@@ -116,11 +116,21 @@ def conversation_message():
         content += f"\n\nObra nº {i}\nNome: {item.name}\nDescrição: {item.description}\nAutor: {item.authorName}"
         i += 1
 
+    message_history = Message.query.filter_by(sessionId=session_id).order_by(Message.datetime).all()
+    historical_messages = [
+        {
+            "role": "user" if message.role == 1 else "assistant",
+            "content": message.message
+        }
+        for message in message_history
+    ]
+
     messages = [
         {
             "role": "system",
             "content": content
-        },
+        }
+    ] + historical_messages + [
         {
             "role": "user",
             "content": transcripted_audio,
