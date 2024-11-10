@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from dotenv import load_dotenv
+import whisper
 import uuid
 import os
 
@@ -74,10 +75,20 @@ def conversation_message():
     audio_path = os.path.join('audio', audio_filename)
     audio_file.save(audio_path)
 
+    # Whisper para transcrever áudio .mp3 para texto
+    model = whisper.load_model('base')
+    result = model.transcribe('received_audio_tarcilaamaral_servertest.mp3')
+    
+    transcripted_audio = result['text']
+    
+    # Pegar transcrição e obter resposta do Groq/Llama
+    # Pegar resposta e passar no Piper para virar áudio .mp3
+    # Enviar JSON de resposta
+
     response = {
         "sessionId": session_id,
         "audioUrl": f"https://api.acessibilidade.tec.br/audio/{audio_filename}",
-        "transcription": "Texto de transcrição gerado a partir do áudio."
+        "transcription": transcripted_audio
     }
     return jsonify(response)
 
