@@ -124,7 +124,17 @@ def conversation_message():
 
     if not os.path.exists(response_audio_path):
         abort(500, description="Audio file not found.")
-    
+
+    # Insere mensagem gerada pela LLM na tabela "message"
+    new_message = Message(
+        sessionId = session_id,
+        role = 'assistant',
+        message = agent_response,
+        audioFilename = response_audio
+    )
+    db.session.add(new_message)
+    db.session.commit()
+
     # Enviar JSON de resposta
     response = {
         "sessionId": session_id,
