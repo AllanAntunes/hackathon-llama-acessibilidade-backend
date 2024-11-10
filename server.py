@@ -53,26 +53,22 @@ class SpaceItem(db.Model):
     authorName = db.Column(db.Text)
     authorDescription = db.Column(db.Text)
 
-@app.route('/conversation/start', methods=['GET'])
+@app.route('/conversation/session', methods=['GET'])
 @require_api_key
-def start_conversation():
-    session_id = str(uuid.uuid4())
-
+def conversation_start_session():
     response = {
-        "sessionId": session_id,
-        "audioUrl": "https://api.acessibilidade.tec.br/audio/received_audio_tarcilaamaral.mp3",
-        "transcription": "A imagem apresenta uma pintura de um ser antropomórfico, com características de um ser humano e de um animal. O ser tem um corpo humanoide, com braços e pernas alongados, e um rosto com olhos, nariz e boca. No entanto, ele também tem características de um animal, como um corpo peludo e uma cauda longa e fina.\n\nO ser está sentado em uma posição relaxada, com as pernas cruzadas e os braços apoiados nos joelhos. Ele está olhando para cima, como se estivesse observando algo no céu. O fundo da pintura é azul, com um sol amarelo brilhante no canto superior esquerdo.\n\nA pintura tem um estilo surrealista, com linhas e formas geométricas que criam um efeito de distorção e irrealidade. O uso de cores vivas e contrastantes também contribui para o efeito surrealista da pintura.\n\nNo canto inferior esquerdo da pintura, há uma assinatura e uma data, que não são legíveis. A pintura parece ser uma obra de arte moderna, possivelmente criada no século XX."
+        "sessionId": str(uuid.uuid4()),
     }
     return jsonify(response)
 
 @app.route('/conversation/message', methods=['POST'])
 @require_api_key
-def message_conversation():
+def conversation_message():
     data = request.json
     response = {
         "sessionId": data['sessionId'],
-        "audioUrl": "exampleAudioUrl",
-        "transcription": "exampleTranscription"
+        "audioUrl": "https://api.acessibilidade.tec.br/audio/received_audio_tarcilaamaral.mp3",
+        "transcription": "A imagem apresenta uma pintura de um ser antropomórfico, com características de um ser humano e de um animal. O ser tem um corpo humanoide, com braços e pernas alongados, e um rosto com olhos, nariz e boca. No entanto, ele também tem características de um animal, como um corpo peludo e uma cauda longa e fina.\n\nO ser está sentado em uma posição relaxada, com as pernas cruzadas e os braços apoiados nos joelhos. Ele está olhando para cima, como se estivesse observando algo no céu. O fundo da pintura é azul, com um sol amarelo brilhante no canto superior esquerdo.\n\nA pintura tem um estilo surrealista, com linhas e formas geométricas que criam um efeito de distorção e irrealidade. O uso de cores vivas e contrastantes também contribui para o efeito surrealista da pintura.\n\nNo canto inferior esquerdo da pintura, há uma assinatura e uma data, que não são legíveis. A pintura parece ser uma obra de arte moderna, possivelmente criada no século XX."
     }
     return jsonify(response)
 
