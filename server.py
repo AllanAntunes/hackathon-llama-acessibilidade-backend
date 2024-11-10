@@ -79,7 +79,7 @@ def conversation_message():
     model = whisper.load_model('base')
     result = model.transcribe(audio_path)
     
-    transcripted_audio = result['text']
+    transcripted_audio = result['text'].strip()
     
     # Pegar transcrição e obter resposta do Groq/Llama
     # Pegar resposta e passar no Piper para virar áudio .mp3
