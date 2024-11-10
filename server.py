@@ -55,7 +55,7 @@ class SpaceItem(db.Model):
 
 @app.route('/conversation/session', methods=['GET'])
 @require_api_key
-def conversation_start_session():
+def conversation_session():
     response = {
         "sessionId": str(uuid.uuid4()),
     }
@@ -64,11 +64,20 @@ def conversation_start_session():
 @app.route('/conversation/message', methods=['POST'])
 @require_api_key
 def conversation_message():
-    data = request.json
+    session_id = request.form.get('sessionId')
+    audio_file = request.files.get('audioFile')
+
+    if not audio_file:
+        return jsonify({"error": "Audio file is required"}), 400
+
+    audio_filename = f"{uuid.uuid4()}.mp3"
+    audio_path = os.path.join('audio', audio_filename)
+    audio_file.save(audio_path)
+
     response = {
-        "sessionId": data['sessionId'],
-        "audioUrl": "https://api.acessibilidade.tec.br/audio/received_audio_tarcilaamaral.mp3",
-        "transcription": "A imagem apresenta uma pintura de um ser antropomórfico, com características de um ser humano e de um animal. O ser tem um corpo humanoide, com braços e pernas alongados, e um rosto com olhos, nariz e boca. No entanto, ele também tem características de um animal, como um corpo peludo e uma cauda longa e fina.\n\nO ser está sentado em uma posição relaxada, com as pernas cruzadas e os braços apoiados nos joelhos. Ele está olhando para cima, como se estivesse observando algo no céu. O fundo da pintura é azul, com um sol amarelo brilhante no canto superior esquerdo.\n\nA pintura tem um estilo surrealista, com linhas e formas geométricas que criam um efeito de distorção e irrealidade. O uso de cores vivas e contrastantes também contribui para o efeito surrealista da pintura.\n\nNo canto inferior esquerdo da pintura, há uma assinatura e uma data, que não são legíveis. A pintura parece ser uma obra de arte moderna, possivelmente criada no século XX."
+        "sessionId": session_id,
+        "audioUrl": f"https://api.acessibilidade.tec.br/audio/{audio_filename}",
+        "transcription": "Texto de transcrição gerado a partir do áudio."
     }
     return jsonify(response)
 
