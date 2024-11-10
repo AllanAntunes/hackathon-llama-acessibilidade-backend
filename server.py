@@ -100,7 +100,7 @@ def conversation_message():
     # Insere mensagem enviada pelo usuário na tabela "message"
     new_message = Message(
         sessionId = session_id,
-        role = 'user',
+        role = 1,
         message = transcripted_audio,
         audioFilename = audio_filename
     )
@@ -128,7 +128,7 @@ def conversation_message():
     # Insere mensagem gerada pela LLM na tabela "message"
     new_message = Message(
         sessionId = session_id,
-        role = 'assistant',
+        role = 2,
         message = agent_response,
         audioFilename = response_audio
     )
