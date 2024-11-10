@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from dotenv import load_dotenv
 from groq import Groq
+from agent import run_conversation
 import uuid
 import os
 
@@ -66,6 +67,7 @@ def conversation_session():
 @require_api_key
 def conversation_message():
     session_id = request.form.get('sessionId')
+    space_id = request.form.get('spaceId')
     audio_file = request.files.get('audioFile')
 
     if not audio_file:
@@ -89,17 +91,19 @@ def conversation_message():
             language="pt",
             temperature=0.0
         )
-    
-    transcripted_audio = transcription.text
-    
-    # Pegar transcrição e obter resposta do Groq/Llama
-    # Pegar resposta e passar no Piper para virar áudio .mp3
-    # Enviar JSON de resposta
 
+    transcripted_audio = transcription.text
+
+    # Pegar transcrição e obter resposta do Groq/Llama
+    agent_response = run_conversation(transcripted_audio)
+    
+    # Pegar resposta e passar no Piper para virar áudio .mp3
+    
+    # Enviar JSON de resposta
     response = {
         "sessionId": session_id,
         "audioUrl": f"https://api.acessibilidade.tec.br/audio/{audio_filename}",
-        "transcription": transcripted_audio
+        "transcription": agent_response
     }
     return jsonify(response)
 
