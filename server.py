@@ -76,7 +76,9 @@ def conversation_message():
     audio_file.save(audio_path)
 
     # Transcrição de áudio para texto
-    groq_client = Groq()
+    groq_client = Groq(
+        api_key=os.environ.get("GROQ_API_KEY")
+    )
 
     with open(audio_path, "rb") as file:
         transcription = groq_client.audio.transcriptions.create(
