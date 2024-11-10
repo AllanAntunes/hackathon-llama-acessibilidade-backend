@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from dotenv import load_dotenv
 from groq import Groq
-from agent import run_conversation
+from agent import agent
 import uuid
 import os
 import subprocess
@@ -106,9 +106,9 @@ def conversation_message():
     )
     db.session.add(new_message)
     db.session.commit()
-
+    ag = agent(space_id)
     # Pegar transcrição e obter resposta do Groq/Llama
-    agent_response = run_conversation(transcripted_audio, groq_client)
+    agent_response = ag.run_conversation(transcripted_audio, groq_client)
     
     # Pegar resposta e passar no Piper para virar áudio .mp3
     response_audio = f"{uuid.uuid4()}.mp3"
