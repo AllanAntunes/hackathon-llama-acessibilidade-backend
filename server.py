@@ -35,7 +35,8 @@ class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     sessionId = db.Column(db.Integer, nullable=False)
     role = db.Column(db.Integer, nullable=False, comment='1 - User / 2 - Assistant')
-    message = db.Column(db.Text, nullable=False)
+    message = db.Column(db.Text, nullable=True)
+    audioFilename = db.Column(db.Text, nullable=True)
     datetime = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
 
 class Space(db.Model):
@@ -95,6 +96,16 @@ def conversation_message():
         )
 
     transcripted_audio = transcription.text
+
+    # Insere mensagem enviada pelo usuário na tabela "message"
+    new_message = Message(
+        sessionId = session_id,
+        role = 'user',
+        message = transcripted_audio,
+        audioFilename = audio_filename
+    )
+    db.session.add(new_message)
+    db.session.commit()
 
     # Pegar transcrição e obter resposta do Groq/Llama
     agent_response = run_conversation(transcripted_audio, groq_client)
