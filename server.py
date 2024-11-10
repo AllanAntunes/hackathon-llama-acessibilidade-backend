@@ -77,7 +77,7 @@ def conversation_message():
 
     # Whisper para transcrever áudio .mp3 para texto
     model = whisper.load_model('base')
-    result = model.transcribe('received_audio_tarcilaamaral_servertest.mp3')
+    result = model.transcribe(audio_path)
     
     transcripted_audio = result['text']
     
