@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from dotenv import load_dotenv
 from groq import Groq
-from agent import agent
 import uuid
 import os
 import subprocess
@@ -13,7 +12,7 @@ load_dotenv()
 API_KEY = os.getenv('API_KEY')
 
 app = Flask(__name__)
-CORS(app, origins='*')
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('MYSQL_CONNECTION')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -106,10 +105,37 @@ def conversation_message():
     )
     db.session.add(new_message)
     db.session.commit()
-    ag = agent(space_id)
+
     # Pegar transcrição e obter resposta do Groq/Llama
-    agent_response = ag.run_conversation(transcripted_audio, groq_client)
+    space = Space.query.get(space_id)
+    content = f"Você é o curador virtual do evento cultural \"{space.name}\". Descrição do ambiente cultural: \"{space.description}\".\n\nSeu objetivo é fornecer a audiodescrição dos objetos ou artes expostas neste evento de forma sequencial. O deficiente visual irá percorrer as obras em ordem, informando você quando chegar na próxima obra através do aviso no piso podotátil. As obras estão expostas na seguinte ordem:\n\n"
     
+    items = SpaceItem.query.filter_by(spaceId=space_id).all()
+    i = 1
+    for item in items:
+        content += f"\n\nObra nº {i}\nNome: {item.name}\nDescrição: {item.description}\nAutor: {item.authorName}"
+        i += 1
+
+    messages = [
+        {
+            "role": "system",
+            "content": content
+        },
+        {
+            "role": "user",
+            "content": transcripted_audio,
+        }
+    ]
+
+    response = groq_client.chat.completions.create(
+        model='llama-3.2-90b-vision-preview',
+        messages=messages,
+        max_tokens=4096,
+        temperature=0
+    )
+
+    agent_response = response.choices[0].message.content
+
     # Pegar resposta e passar no Piper para virar áudio .mp3
     response_audio = f"{uuid.uuid4()}.mp3"
     response_audio_path = os.path.join('audio', response_audio)
