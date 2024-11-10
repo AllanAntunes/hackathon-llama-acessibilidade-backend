@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from dotenv import load_dotenv
-import whisper
+from groq import Groq
 import uuid
 import os
 
@@ -75,11 +75,20 @@ def conversation_message():
     audio_path = os.path.join('audio', audio_filename)
     audio_file.save(audio_path)
 
-    # Whisper para transcrever áudio .mp3 para texto
-    model = whisper.load_model('base')
-    result = model.transcribe(audio_path, language='pt')
+    # Transcrição de áudio para texto
+    groq_client = Groq()
+
+    with open(audio_path, "rb") as file:
+        transcription = groq_client.audio.transcriptions.create(
+            file=(audio_path, file.read()),
+            model="whisper-large-v3-turbo",
+            prompt="Specify context or spelling",
+            response_format="json",
+            language="pt",
+            temperature=0.0
+        )
     
-    transcripted_audio = result['text'].strip()
+    transcripted_audio = transcription.text
     
     # Pegar transcrição e obter resposta do Groq/Llama
     # Pegar resposta e passar no Piper para virar áudio .mp3
