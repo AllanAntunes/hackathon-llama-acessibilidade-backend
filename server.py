@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -6,6 +6,8 @@ from groq import Groq
 from agent import run_conversation
 import uuid
 import os
+import subprocess
+import shlex
 
 load_dotenv()
 API_KEY = os.getenv('API_KEY')
@@ -98,11 +100,24 @@ def conversation_message():
     agent_response = run_conversation(transcripted_audio, groq_client)
     
     # Pegar resposta e passar no Piper para virar áudio .mp3
+    response_audio = f"{uuid.uuid4()}.mp3"
+    response_audio_path = os.path.join('audio', response_audio)
+
+    safe_text = shlex.quote(agent_response)
+    command = f"echo {safe_text} | piper --model pt_BR-faber-medium --output_file {response_audio_path}"
+
+    try:
+        subprocess.run(command, shell=True, check=True)
+    except subprocess.CalledProcessError as e:
+        abort(500, description=f"Failed to generate audio: {str(e)}")
+
+    if not os.path.exists(response_audio_path):
+        abort(500, description="Audio file not found.")
     
     # Enviar JSON de resposta
     response = {
         "sessionId": session_id,
-        "audioUrl": f"https://api.acessibilidade.tec.br/audio/{audio_filename}",
+        "audioUrl": f"https://api.acessibilidade.tec.br/audio/{response_audio}",
         "transcription": agent_response
     }
     return jsonify(response)
