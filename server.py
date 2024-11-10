@@ -39,6 +39,7 @@ class SpaceItem(db.Model):
     step = db.Column(db.Integer, nullable=False)
     name = db.Column(db.Text, nullable=False)
     description = db.Column(db.Text)
+    aiDescription = db.Column(db.Text)
     imageUrl = db.Column(db.Text)
     authorName = db.Column(db.Text)
     authorDescription = db.Column(db.Text)
